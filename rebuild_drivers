@@ -28,6 +28,10 @@ BF_VERSION=3.9.0
 MLNX_OFED_VERSION=5.6-1.0.3.3
 WDIR=${WDIR:-/tmp}
 
+#+DOCA_VERSION=1.5.1
+#+BF_VERSION=3.9.1
+#+MLNX_OFED_VERSION=5.8-1.0.1.1
+
 # Execute command w/ echo and exit if it fail
 ex()
 {
@@ -73,22 +77,27 @@ ex cp /usr/share/doc/mlnx-ofa_kernel/82-net-setup-link.rules /etc/udev/rules.d/8
 # find MLNX_OFED_SRC-${MLNX_OFED_VERSION}/RPMS -name '*rpm' -a ! -name '*debuginfo*rpm' -exec rpm -ihv '{}' \;
 
 # Build and install BlueField SoC drivers
-ex wget --quiet --no-check-certificate -r -np -nH --cut-dirs=3 -R "index.html*" https://linux.mellanox.com/public/repo/bluefield/${BF_VERSION}/extras/SRPMS/
+# ex wget --quiet --no-check-certificate -r -np -nH --cut-dirs=3 -R "index.html*" https://linux.mellanox.com/public/repo/bluefield/${BF_VERSION}/extras/SRPMS/
+ex wget --quiet --no-check-certificate -r -np -nH --cut-dirs=3 -R "index.html*" https://linux.mellanox.com/public/repo/bluefield/4.0.0-beta/extras/SRPMS/
 mkdir -p ${WDIR}/${BF_VERSION}/extras/{SPECS,RPMS,SOURCES,BUILD}
 
-for p in ${WDIR}/${BF_VERSION}/extras/SRPMS/*.src.rpm
+for p in ${WDIR}/4.0.0-beta/extras/SRPMS/*.src.rpm
 do
 	case $p in
-		*rshim* | *libpka* | *mlx-OpenIPMI* | *mlxbf-bootctl* | *ipmb-host* | *mlx-cpld*)
-			continue
+		*rshim* | *libpka* | *mlxbf-bootctl* | *ipmb-host* | *mlx-cpld* | *i2c* | *ipmb-dev*)
+			ex rpmbuild --rebuild -D "debug_package %{nil}" -D "KVERSION $kernel" --define "KMP 0" --define "_topdir ${WDIR}/4.0.0-beta/extras" $p
 			;;
 		*dw_mmc*)
 			/bin/rm -f $p
 			wget  --quiet --no-check-certificate -P ${WDIR}/${BF_VERSION}/extras/SRPMS/ https://linux.mellanox.com/public/repo/bluefield/${BF_VERSION}/extras/5.15/dw_mmc-5.15.36-0.src.rpm
 			p=`/bin/ls -1 ${WDIR}/${BF_VERSION}/extras/SRPMS/dw_mmc*.src.rpm`
+			ex rpmbuild --rebuild -D "debug_package %{nil}" -D "KVERSION $kernel" --define "KMP 0" --define "_topdir ${WDIR}/${BF_VERSION}/extras" $p
 			;;
 	esac
-	ex rpmbuild --rebuild -D "debug_package %{nil}" -D "KVERSION $kernel" --define "KMP 0" --define "_topdir ${WDIR}/${BF_VERSION}/extras" $p
+	
+	
 done
 
 ex rpm -ivh --force ${WDIR}/${BF_VERSION}/extras/RPMS/aarch64/*.rpm
+ex rpm -ivh --force ${WDIR}/4.0.0-beta/extras/RPMS/aarch64/*.rpm
+
