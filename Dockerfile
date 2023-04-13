@@ -6,6 +6,7 @@ WORKDIR /root/workspace
 ADD install.sh .
 ADD create_bfb .
 ADD rebuild_drivers /tmp
+ADD hook-bootkit /bin
 
 ENV RUN_FW_UPDATER=no
 
