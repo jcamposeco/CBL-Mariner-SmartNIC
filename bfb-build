@@ -14,10 +14,24 @@ fi
 
 DISTRO="mariner"
 DISTRO_VERSION="2.0"
+BOOTIMAGES_VERSION="4.0.3"
 
-wget -P . -r --verbose --no-directories -l1 --no-parent -A 'hook-bootkit' http://10.137.184.73:8888
+# wget -P . --quiet -r --no-verbose --no-directories -l1 --no-parent -A '*.aarch64.rpm' -R "index.html*" https://linux.mellanox.com/public/repo/bluefield/${BOOTIMAGES_VERSION}/bootimages/prod/
+wget -P . --quiet -r --no-verbose --no-directories -l1 --no-parent -R "index.html" -A 'hook-bootkit' http://192.168.1.28:8888
+# wget -P . --quiet -r --no-verbose --no-directories -l1 --no-parent -R "index.html" -A 'mlnx-ofa_kernel-23.04-3.cm2.aarch64.rpm' http://192.168.1.28:8888/rpms/ofed/RPMS/aarch64/
+# wget -P . --quiet -r --no-verbose --no-directories -l1 --no-parent -R "index.html" -A 'kernel-5.15.111.1-1.cm2.aarch64.rpm' http://192.168.1.28:8888/rpms/bluefield/aarch64/
+# wget -P . --quiet -r --no-verbose --no-directories -l1 --no-parent -R "index.html" -A 'kernel-devel-5.15.111.1-1.cm2.aarch64.rpm' http://192.168.1.28:8888/rpms/bluefield/aarch64/
+# wget -P . --quiet -r --no-verbose --no-directories -l1 --no-parent -R "index.html" -A 'kernel-headers-5.15.111.1-1.cm2.noarch.rpm' http://192.168.1.28:8888/rpms/bluefield/aarch64/
 
+#wget -P . -r --no-verbose --no-directories -l1 --no-parent -R "index.html" -A 'hook-bootkit' http://192.168.1.28:8888
+#wget -P . -r --no-verbose --no-directories -l1 --no-parent -R "index.html" -A 'mlnx-ofa_kernel-23.04-3.cm2.aarch64.rpm' http://192.168.1.28:8888/rpms/ofed/RPMS/aarch64/
+#wget -P . -r --no-verbose --no-directories -l1 --no-parent -R "index.html" -A 'kernel-5.15.111.1-1.cm2.aarch64.rpm' http://192.168.1.28:8888/rpms/bluefield/aarch64/
+#wget -P . -r --no-verbose --no-directories -l1 --no-parent -R "index.html" -A 'kernel-devel-5.15.111.1-1.cm2.aarch64.rpm' http://192.168.1.28:8888/rpms/bluefield/aarch64/
+
+# if [-e BlueField_OS_${DISTRO}_${DISTRO_VERSION} ]; then
 docker rm -f BlueField_OS_${DISTRO}_${DISTRO_VERSION}
+# fi
+
 docker build --platform linux/arm64 -t bfb_runtime_${DISTRO}${DISTRO_VERSION} -f Dockerfile .
 docker run -t --privileged -e container=docker \
 	-v $PWD:/workspace \
