@@ -380,6 +380,11 @@ if [ -n "$BFCFG" ]; then
 	$BFCFG
 fi
 
+# enable ping
+iptables -P INPUT ACCEPT
+iptables -P OUTPUT ACCEPT
+iptables -P FORWARD ACCEPT
+
 echo
 echo "User/password is \"mariner/mariner\""
 echo
