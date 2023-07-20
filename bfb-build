@@ -28,9 +28,7 @@ wget -P . --quiet -r --no-verbose --no-directories -l1 --no-parent -R "index.htm
 #wget -P . -r --no-verbose --no-directories -l1 --no-parent -R "index.html" -A 'kernel-5.15.111.1-1.cm2.aarch64.rpm' http://192.168.1.28:8888/rpms/bluefield/aarch64/
 #wget -P . -r --no-verbose --no-directories -l1 --no-parent -R "index.html" -A 'kernel-devel-5.15.111.1-1.cm2.aarch64.rpm' http://192.168.1.28:8888/rpms/bluefield/aarch64/
 
-# if [-e BlueField_OS_${DISTRO}_${DISTRO_VERSION} ]; then
 docker rm -f BlueField_OS_${DISTRO}_${DISTRO_VERSION}
-# fi
 
 docker build --platform linux/arm64 -t bfb_runtime_${DISTRO}${DISTRO_VERSION} -f Dockerfile .
 docker run -t --privileged -e container=docker \
